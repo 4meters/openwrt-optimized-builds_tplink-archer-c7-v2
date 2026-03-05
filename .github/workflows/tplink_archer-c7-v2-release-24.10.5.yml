@@ -1,8 +1,6 @@
-name: Build tplink_archer-c7-v4
+name: Build tplink_archer-c7-v2 - release (24.10.5)
 
 on:
-  schedule:
-    - cron: 0 0 * * SAT
   repository_dispatch:
   workflow_dispatch:
     branches:
@@ -19,7 +17,7 @@ on:
       version:
         description: 'OpenWrt version'
         required: true
-        default: 'snapshot'
+        default: 'release-24.10.5'
         type: string
 
 env:
@@ -31,7 +29,7 @@ env:
   OPENWRT_ISA: mips32r2
   OPENWRT_TARGET: ath79
   OPENWRT_SUBTARGET: generic
-  OPENWRT_DEVICE_MODEL: tplink_archer-c7-v4
+  OPENWRT_DEVICE_MODEL: tplink_archer-c7-v2
   OPENWRT_CPU_CFLAG: -mno-branch-likely
   OPENWRT_CPU_NUMPROC: 1
   OPENWRT_CPU_CFLAG_OPTIMIZATION: -mno-branch-likely
@@ -70,7 +68,7 @@ jobs:
       run: |
         git clone --branch $REPO_BRANCH $REPO_URL --single-branch
         cd ./openwrt
-        git checkout 9c04f527c62b38faf25e39e958679d2c717c618d
+        git checkout 4f7e6e554be2aef6a55be36f9f954d56705eb2ee
 
     - name: Set default target
       run: |
@@ -131,10 +129,10 @@ jobs:
         tar -zcvf All_Packages.tar.gz $BUILDROOT/bin/packages
         tar -zcvf All_Firmwares.tar.gz $BUILDROOT/bin/targets
 
-    - name: Generate snapshot Release Tag
+    - name: Generate release Release Tag
       id: snapshottag
       run: |
-        echo "release_tag=SNAPSHOT_$(date +"%Y-%m-%d")" >> $GITHUB_OUTPUT
+        echo "release_tag=24.10.5-release_$(date +"%Y-%m-%d")" >> $GITHUB_OUTPUT
 
     - name: Upload snapshot firmware to Release
       uses: softprops/action-gh-release@v2
@@ -143,8 +141,8 @@ jobs:
       with:
         tag_name: ${{ steps.snapshottag.outputs.release_tag }}-${{ env.OPENWRT_DEVICE_MODEL }}
         files: |
-          All_Packages.tar.gz
-          All_Firmwares.tar.gz
+          All_Packages-$OPENWRT_DEVICE_MODEL.tar.gz
+          All_Firmwares-$OPENWRT_DEVICE_MODEL.tar.gz
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
