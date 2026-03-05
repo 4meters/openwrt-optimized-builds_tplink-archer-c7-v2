@@ -124,8 +124,8 @@ jobs:
 
     - name: Organize files
       run: |
-        tar -zcvf All_Packages.tar.gz $BUILDROOT/bin/packages
-        tar -zcvf All_Firmwares.tar.gz $BUILDROOT/bin/targets
+        tar -zcvf All_Packages-$OPENWRT_DEVICE_MODEL.tar.gz $BUILDROOT/bin/packages
+        tar -zcvf All_Firmwares-$OPENWRT_DEVICE_MODEL.tar.gz $BUILDROOT/bin/targets
 
     - name: Generate release Release Tag
       id: snapshottag
@@ -139,8 +139,8 @@ jobs:
       with:
         tag_name: ${{ steps.snapshottag.outputs.release_tag }}-${{ env.OPENWRT_DEVICE_MODEL }}
         files: |
-          All_Packages-$OPENWRT_DEVICE_MODEL.tar.gz
-          All_Firmwares-$OPENWRT_DEVICE_MODEL.tar.gz
+          All_Packages-${{ env.OPENWRT_DEVICE_MODEL }}.tar.gz
+          All_Firmwares-${{ env.OPENWRT_DEVICE_MODEL }}.tar.gz
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
